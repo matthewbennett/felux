@@ -1,13 +1,20 @@
-import {React, useState} from 'react';
+import {React, useState, useContext} from 'react';
 import { Layout, Menu } from 'antd';
 import {
   DesktopOutlined
 } from '@ant-design/icons';
 import './Dashboard.css';
+import QouteStats from '../QouteStats/QouteStats';
+import { qouteContext } from '../../context/QouteProvider';
 
 const Dashboard = props => {
     const { Header, Content, Footer, Sider } = Layout;
     const [collapsed, setCollapsed] = useState(false); // manages the side menu position
+    const context = useContext(qouteContext);
+    const [totalPounds, updateTotalPounds] = context.usePounds;
+    const [invoiceAmount, updateInvoiceAmount] = context.useInvoice;
+    const [CWT, updateCWT] = context.useCWT;
+     
     const onCollapse = collapsed => {
         setCollapsed(collapsed); 
     };
@@ -27,7 +34,7 @@ const Dashboard = props => {
             <Layout className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }} />
             <Content className='content-container'>
-                
+                <QouteStats stats={[totalPounds, invoiceAmount, CWT]} />
             </Content>
             <Footer style={{ textAlign: 'center' }}>Frontend Felux Assessment</Footer>
             </Layout>

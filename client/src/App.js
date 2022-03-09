@@ -1,11 +1,14 @@
 import './App.css';
 import 'antd/dist/antd.css';
 import Dashboard from './components/Dashboard/Dashboard';
+import QouteProvider from './context/QouteProvider';
 
 function App() {
   return (
     <div>
-      <Dashboard />
+      <QouteProvider>
+        <Dashboard />
+      </QouteProvider>
     </div>
   );
 }
