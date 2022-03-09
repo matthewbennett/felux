@@ -1,0 +1,17 @@
+.logo {
+    padding: 20px 13px 6px 13px;
+}
+
+.logo h1 {
+    color: #fff;
+    text-align: center;
+}
+
+.data-col {
+    height: 3000px;
+}
+
+.content-container {
+    padding: 20px;
+    margin: 0 16px;
+}
