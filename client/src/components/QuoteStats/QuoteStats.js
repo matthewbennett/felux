@@ -2,9 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Statistic, Row, Col, Space, Card } from 'antd';
 
-function QouteStats({stats}) {
+function QuoteStats({stats}) {
   const statCards = stats.map((item, i) => {
-    console.log(item);
     return (
       <Col key={i} span={8}>
         <Space direction="horizontal" style={{width: '100%', justifyContent: 'center'}}>
@@ -30,9 +29,9 @@ function QouteStats({stats}) {
   )
 }
 
-QouteStats.propTypes = {
+QuoteStats.propTypes = {
   stats: PropTypes.array
 }
 
-export default QouteStats
+export default QuoteStats
 

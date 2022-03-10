@@ -1,9 +1,9 @@
 import { createContext, useState } from 'react';
 
-export const qouteContext = createContext();
+export const quoteContext = createContext();
 
-const QouteProvider = (props) => {
-    const [qoutes, updateQoutes] = useState(sampleData);
+const QuoteProvider = (props) => {
+    const [quotes, updateQuotes] = useState(sampleData);
     const [totalPounds, updateTotalPounds] = useState({
         title: 'Total Pounds',
         value: 0,
@@ -30,18 +30,18 @@ const QouteProvider = (props) => {
     });
 
     return (
-        <qouteContext.Provider value={{
-            useQoutes: [qoutes, updateQoutes],
+        <quoteContext.Provider value={{
+            useQuotes: [quotes, updateQuotes],
             useInvoice: [invoiceAmount, updateInvoiceAmount],
             usePounds: [totalPounds, updateTotalPounds],
             useCWT: [CWT, updateCWT]
             }}>
             {props.children}
-        </qouteContext.Provider>
+        </quoteContext.Provider>
     );
 };
 
-export default QouteProvider;
+export default QuoteProvider;
 
 const sampleData = [
     {

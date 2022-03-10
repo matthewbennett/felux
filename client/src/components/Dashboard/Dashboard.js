@@ -1,19 +1,21 @@
 import {React, useState, useContext} from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Space } from 'antd';
 import {
   DesktopOutlined
 } from '@ant-design/icons';
 import './Dashboard.css';
-import QouteStats from '../QouteStats/QouteStats';
-import { qouteContext } from '../../context/QouteProvider';
+import QuoteStats from '../QuoteStats/QuoteStats';
+import DataTable from '../DataTable/DataTable';
+import { quoteContext } from '../../context/QuoteProvider';
 
 const Dashboard = props => {
     const { Header, Content, Footer, Sider } = Layout;
     const [collapsed, setCollapsed] = useState(false); // manages the side menu position
-    const context = useContext(qouteContext);
+    const context = useContext(quoteContext);
     const [totalPounds, updateTotalPounds] = context.usePounds;
     const [invoiceAmount, updateInvoiceAmount] = context.useInvoice;
     const [CWT, updateCWT] = context.useCWT;
+    const [quotes, updateQuotes] = context.useQuotes;
      
     const onCollapse = collapsed => {
         setCollapsed(collapsed); 
@@ -34,7 +36,10 @@ const Dashboard = props => {
             <Layout className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }} />
             <Content className='content-container'>
-                <QouteStats stats={[totalPounds, invoiceAmount, CWT]} />
+                <Space className='full' direction="vertical">
+                    <QuoteStats stats={[totalPounds, invoiceAmount, CWT]} />
+                    <DataTable quotes={quotes} />
+                </Space>
             </Content>
             <Footer style={{ textAlign: 'center' }}>Frontend Felux Assessment</Footer>
             </Layout>
