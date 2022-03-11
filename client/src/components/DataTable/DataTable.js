@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { Table } from 'antd';
 import Filter from '../Filter/Filter';
 import './DataTable.css';
+import { quoteContext } from '../../context/QuoteProvider';
 
 
 function DataTable({quotes}) {
+    const context = useContext(quoteContext);
+    const [totalPounds, updateTotalPounds] = context.usePounds;
+    const [invoiceAmount, updateInvoiceAmount] = context.useInvoice;
+    const [CWT, updateCWT] = context.useCWT;
     const [filter, changeFilter] = useState('FinalPrice');
     const [formattedQuotes, updateQuotes] = useState();
     const [table, updateTable] = useState();
@@ -34,13 +39,26 @@ function DataTable({quotes}) {
         });
     }
 
+    const selectProduct = (product, price) => {
+        console.log(product);
+        const updatedCWT = Object.create(CWT);
+        updatedCWT.value = price;
+        const invoiceValue = (product.Weight / 100 * parseInt(price));
+        const updatedInvoiceAmount = Object.create(invoiceAmount);
+        updatedInvoiceAmount.value = invoiceValue;
+        const updatedPounds = Object.create(totalPounds);
+        updatedPounds.value = product.Weight / 1000;
+        updateCWT(updatedCWT);
+        updateTotalPounds(updatedPounds);
+        updateInvoiceAmount(updatedInvoiceAmount);
+    };
+
     const dynamicColumns = companies.map((item, i) => {
         return {
             title: item,
             dataIndex: item,
             key: i,
             render(text, record) {
-            console.log(record);
             let bestPrice = Number.MAX_VALUE;
             let worstPrice = -1;
             let bgColor = '#fff';
@@ -49,9 +67,7 @@ function DataTable({quotes}) {
                 worstPrice = record[companies[c]] > worstPrice ? record[companies[c]] : worstPrice;
                 bestPrice = record[companies[c]] < bestPrice ? record[companies[c]] : bestPrice;
             }
-            console.log('worst price: ' + worstPrice);
-            console.log('best price: ' + bestPrice);
-            console.log('text: ' + text);
+
             if(worstPrice == text) {
                 bgColor = '#ff0000c4';
                 textColor = '#fff';
@@ -64,9 +80,9 @@ function DataTable({quotes}) {
             
             return {
                 props: {
-                    style: { background: bgColor, color: textColor }
+                    style: { background: bgColor, color: textColor, cursor: 'pointer' }
                     },
-                    children: <div>{text}</div>
+                    children: <div onClick={() => {selectProduct(record, text)}}>{text}</div>
                 };
             }
         };
