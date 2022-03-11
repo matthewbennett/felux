@@ -38,7 +38,37 @@ function DataTable({quotes}) {
         return {
             title: item,
             dataIndex: item,
-            key: i
+            key: i,
+            render(text, record) {
+            console.log(record);
+            let bestPrice = Number.MAX_VALUE;
+            let worstPrice = -1;
+            let bgColor = '#fff';
+            let textColor = '#000';
+            for(let c in companies) {
+                worstPrice = record[companies[c]] > worstPrice ? record[companies[c]] : worstPrice;
+                bestPrice = record[companies[c]] < bestPrice ? record[companies[c]] : bestPrice;
+            }
+            console.log('worst price: ' + worstPrice);
+            console.log('best price: ' + bestPrice);
+            console.log('text: ' + text);
+            if(worstPrice == text) {
+                bgColor = '#ff0000c4';
+                textColor = '#fff';
+            }
+
+            if(bestPrice == text) {
+                bgColor = '#24b324';
+                textColor = '#fff';
+            }
+            
+            return {
+                props: {
+                    style: { background: bgColor, color: textColor }
+                    },
+                    children: <div>{text}</div>
+                };
+            }
         };
     });
 
