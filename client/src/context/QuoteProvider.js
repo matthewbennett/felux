@@ -4,10 +4,11 @@ export const quoteContext = createContext();
 
 const QuoteProvider = (props) => {
     const [quotes, updateQuotes] = useState(sampleData);
+    const [products, updateProducts] = useState({});
     const [totalPounds, updateTotalPounds] = useState({
         title: 'Total Pounds',
         value: 0,
-        precision: 0,
+        precision: 2,
         styles: {color: '#3f8600'},
         prefix: null,
         suffix: 'k'
@@ -34,6 +35,7 @@ const QuoteProvider = (props) => {
             useQuotes: [quotes, updateQuotes],
             useInvoice: [invoiceAmount, updateInvoiceAmount],
             usePounds: [totalPounds, updateTotalPounds],
+            useProducts: [products, updateProducts],
             useCWT: [CWT, updateCWT]
             }}>
             {props.children}

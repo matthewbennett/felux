@@ -8,6 +8,7 @@ import { quoteContext } from '../../context/QuoteProvider';
 
 function DataTable({quotes}) {
     const context = useContext(quoteContext);
+    const [products, updateProducts] = context.useProducts;
     const [totalPounds, updateTotalPounds] = context.usePounds;
     const [invoiceAmount, updateInvoiceAmount] = context.useInvoice;
     const [CWT, updateCWT] = context.useCWT;
@@ -40,17 +41,19 @@ function DataTable({quotes}) {
     }
 
     const selectProduct = (product, price) => {
-        console.log(product);
-        const updatedCWT = Object.create(CWT);
-        updatedCWT.value = price;
-        const invoiceValue = (product.Weight / 100 * parseInt(price));
-        const updatedInvoiceAmount = Object.create(invoiceAmount);
-        updatedInvoiceAmount.value = invoiceValue;
-        const updatedPounds = Object.create(totalPounds);
-        updatedPounds.value = product.Weight / 1000;
-        updateCWT(updatedCWT);
-        updateTotalPounds(updatedPounds);
-        updateInvoiceAmount(updatedInvoiceAmount);
+        const updatatedProdcuts = products;
+        if(updatatedProdcuts[product.Product] && updatatedProdcuts[product.Product].price == price) {
+            delete updatatedProdcuts[product.Product];
+        } else {
+            updatatedProdcuts[product.Product] = {
+                price: price,
+                product: product.Product,
+                weight: product.Weight
+            };
+        }
+        updateProducts(updatatedProdcuts);
+        const newQuotes = formateQuotes(quotes, filter);
+        updateQuotes([...newQuotes]);
     };
 
     const dynamicColumns = companies.map((item, i) => {
@@ -77,10 +80,15 @@ function DataTable({quotes}) {
                 bgColor = '#24b324';
                 textColor = '#fff';
             }
+
+            if(products[record.Product] && products[record.Product].price == text) {
+                bgColor = '#3498DB';
+                textColor = '#fff';
+            }
             
             return {
                 props: {
-                    style: { background: bgColor, color: textColor, cursor: 'pointer' }
+                    style: { background: bgColor, color: textColor, cursor: 'pointer', height: '100%' }
                     },
                     children: <div onClick={() => {selectProduct(record, text)}}>{text}</div>
                 };
@@ -117,12 +125,29 @@ function DataTable({quotes}) {
         updateTable('');
         const newQuotes = formateQuotes(quotes, filter);
         updateQuotes([...newQuotes]);
+        updateProducts({});
     }, [filter]);
 
     useEffect(() => {
         console.log('qoute change');
         const newTable = genTable(formattedQuotes, columns);
         updateTable(newTable);
+        
+        // update stats 
+        //pounds
+        const totals = getTotals(products);
+        const updatedPounds = Object.create(totalPounds);
+        updatedPounds.value = totals.pounds / 1000;
+        updateTotalPounds(updatedPounds);
+        //invoice
+        const updatedInvoice = Object.create(invoiceAmount);
+        updatedInvoice.value = totals.invoice;
+        updateInvoiceAmount(updatedInvoice);
+        //cwt
+        const updatedCWT = Object.create(CWT);
+        updatedCWT.value = totals.cwt;
+        updateCWT(updatedCWT);
+        
     },[formattedQuotes]);
 
   return (
@@ -136,6 +161,26 @@ function DataTable({quotes}) {
 
 DataTable.propTypes = {
     quotes: PropTypes.array
+}
+
+const getTotals = (prds) => {
+    let pSum = 0;
+    let invoiceTotal = 0;
+    let cwt = 0;
+
+    for (const [key, value] of Object.entries(prds)) {
+        console.log(`${key}: ${value}`);
+        pSum = value.weight + pSum;
+        invoiceTotal = invoiceTotal + (value.weight / 100 * parseFloat(value.price));
+    }
+    if(pSum && invoiceTotal) {
+        cwt = invoiceTotal / (pSum / 1000) * 0.100;
+    }
+    return {
+        pounds: pSum,
+        invoice: invoiceTotal,
+        cwt
+    };
 }
 
 const genKey = () => {
